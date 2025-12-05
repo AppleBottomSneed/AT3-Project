@@ -52,3 +52,4 @@ C:\Users\jon55\Source\Repos\AT3-Project\AT3-Project\obj\Debug\Insertwindow.baml
 C:\Users\jon55\Source\Repos\AT3-Project\AT3-Project\obj\Debug\Window1.baml
 C:\Users\jon55\Source\Repos\AT3-Project\AT3-Project\obj\Debug\Updaterecord.g.cs
 C:\Users\jon55\Source\Repos\AT3-Project\AT3-Project\obj\Debug\Updaterecord.baml
+C:\Users\jon55\Source\Repos\AT3-Project\AT3-Project\obj\Debug\AT3-Project.exe.config
