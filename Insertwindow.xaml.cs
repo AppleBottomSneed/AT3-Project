@@ -29,26 +29,38 @@ namespace AT3_Project
 
         public void insertemployee()
         {
-            MySqlConnection conn = new MySqlConnection(dbconnectionString);
-            string sqlQuery = "INSERT INTO employees (given_name, family_name, date_of_birth, gender_identity, gross_salary, supervisor_id, branch_id) " + "VALUES " +
-            "('" + this.GivennameText.Text + "','" + this.FamilynameText.Text + "','" + this.BirthdayText.Text + "','" +
-                      this.GenderText.Text + "','" + this.GrossSalaryText.Text + "','" + this.SupervisorIdText.Text + "','" + this.BranchText.Text + "')";
-            MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
-            try
+            using (MySqlConnection conn = new MySqlConnection(dbconnectionString))
             {
-                conn.Open();
-                MySqlCommand cmd1 = new MySqlCommand(sqlQuery, conn);
-                cmd1.ExecuteNonQuery();
-                MessageBox.Show("Added");
-                conn.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            conn.Close();
-        }
+                string sqlQuery = "INSERT INTO employees (given_name, family_name, date_of_birth, gender_identity, gross_salary, supervisor_id, branch_id) " +
+                "VALUES (@GivenName, @FamilyName, @DateOfBirth, @GenderIdentity, @GrossSalary, @SupervisorId, @BranchId)";
 
+                using (MySqlCommand cmd = new MySqlCommand(sqlQuery, conn)) 
+                {
+                    //prepared statement
+                    cmd.Parameters.AddWithValue("@GivenName", this.GivennameText.Text);
+                    cmd.Parameters.AddWithValue("@FamilyName", this.FamilynameText.Text);
+                    cmd.Parameters.AddWithValue("@DateOfBirth", this.BirthdayText.Text);
+                    cmd.Parameters.AddWithValue("@GenderIdentity", this.GenderText.Text);
+                    cmd.Parameters.AddWithValue("@GrossSalary", this.GrossSalaryText.Text);
+                    cmd.Parameters.AddWithValue("@SupervisorId", this.SupervisorIdText.Text);
+                    cmd.Parameters.AddWithValue("@BranchId", this.BranchText.Text);
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Added");
+                        conn.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    conn.Close();
+                }
+            }
+            
+        }
         public void cleardata()
         {
             /* IdText.Clear(); */
