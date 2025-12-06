@@ -44,7 +44,7 @@ namespace AT3_Project
                     cmd.Parameters.AddWithValue("@GrossSalary", this.GrossSalaryText.Text);
                     cmd.Parameters.AddWithValue("@SupervisorId", this.SupervisorIdText.Text);
                     cmd.Parameters.AddWithValue("@BranchId", this.BranchText.Text);
-
+                    
                     try
                     {
                         conn.Open();

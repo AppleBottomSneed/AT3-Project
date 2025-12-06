@@ -159,6 +159,7 @@ namespace AT3_Project
         {
             Updaterecord ob = new Updaterecord();
             ob.ShowDialog();
+            RefreshDataGrid();
             
         }
 
@@ -167,9 +168,74 @@ namespace AT3_Project
         {
             Insertwindow op1 = new Insertwindow();
             op1.ShowDialog();
+            RefreshDataGrid();
 
-        } 
+        }
 
+        private void EmployeeDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EmployeeDataGrid.SelectedItem == null)
+                return;
+
+            DataRowView row = (DataRowView)EmployeeDataGrid.SelectedItem;
+
+            int employeeId = (int)row["employee_id"];
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+       
+            if (EmployeeDataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("Must select employee from table below");
+                return;
+            }
+
+            DataRowView row = (DataRowView)EmployeeDataGrid.SelectedItem;
+            int employeeId = (int)row["employee_id"]; 
+            DeleteEmployee(employeeId);
+            RefreshDataGrid();
+
+        }
+
+        //helper function
+        private void DeleteEmployee(int id)
+        {
+            string sqlQuery = "DELETE FROM employees WHERE employee_id = @Id";
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        //helper function to update EmployeeDataGrid
+        private void RefreshDataGrid()
+        {
+            string sqlQuery = "SELECT * FROM employees;";
+        
+            try
+            {
+                DataTable dataTable = new DataTable();
+
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                dataTable.Load(rdr);
+
+                EmployeeDataGrid.ItemsSource = dataTable.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+
+
+        /** 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             string sqlQuery = "DELETE FROM employees WHERE employee_id = '" + SearchTextBox.Text + "';";
@@ -186,10 +252,13 @@ namespace AT3_Project
             }
             conn.Close();
         }
+        **/
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
+
+        
     }
 }

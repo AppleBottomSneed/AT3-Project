@@ -51,7 +51,7 @@
 
         </Grid>
         <Grid Grid.Row="2" >
-            <DataGrid x:Name="EmployeeDataGrid" Margin="10,15"  Padding="8" Background="White"  />
+            <DataGrid x:Name="EmployeeDataGrid" Margin="10,15"  Padding="8" Background="White" SelectionChanged="EmployeeDataGrid_SelectionChanged"  />
         </Grid>
         <Grid Grid.Row="3">
             <TextBlock Margin="3" TextWrapping="Wrap" Text="Use the buttons above to display information related to employees. To delete records, type in the employee_id of the corresponding employee in the search bar and press delete.  " HorizontalAlignment="Center" />
