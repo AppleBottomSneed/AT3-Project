@@ -66,6 +66,7 @@ namespace AT3_Project
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
+            //LIKE works, = doesnt
             string sqlQuery = "SELECT * FROM employees " + "WHERE given_name LIKE @Search OR family_name LIKE @Search;";
             try
             {
@@ -232,7 +233,45 @@ namespace AT3_Project
             }
         }
 
+        //join operation
+        private void SalesButton_Click(object sender, RoutedEventArgs e)
+        {
+            string sqlQuery = 
+               @"
+               SELECT employees.employee_id,
+               employees.given_name,
+               employees.family_name,
+               employees.date_of_birth,
+               employees.gender_identity,
+               employees.gross_salary,
+               employees.supervisor_id,
+               employees.branch_id,
+               SUM(working_with.total_sales) AS total_sales
+               FROM employees 
+               LEFT JOIN working_with ON employees.employee_id = working_with.employee_id
+               GROUP BY employees.employee_id;"; 
 
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                using (var conn = new MySqlConnection(dbConnectionString))
+                {
+                    conn.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(sqlQuery, conn))
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        dataTable.Load(rdr);
+                    }
+                }
+
+                EmployeeDataGrid.ItemsSource = dataTable.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
 
         /** 

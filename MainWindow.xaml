@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AT3_Project"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="450" Width="1000"
         Background="LightCyan">
     <Grid>
         <Grid.RowDefinitions>
@@ -43,11 +43,12 @@
                 <ComboBoxItem Content="3" />
             </ComboBox>
             <RadioButton Grid.Column="2" x:Name="SalaryButton" Content="Above $70,000" Checked="SalaryButton_Checked"  VerticalAlignment="Center" HorizontalAlignment="Center"  />
-            <Button Grid.Column="3" x:Name="EditButton" Content="Edit" Click="EditEmployee_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40" />
-            <Button Grid.Column="4" x:Name="NewButton" Content="New" Click="NewEmployee_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40" />
-            <Button Grid.Column="5" x:Name="DeleteButton" Content="Delete" Click="DeleteButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40" /> 
-            <Button Grid.Column="6" x:Name="SearchButton" Click="SearchButton_Click" Content="Search"  VerticalAlignment="Center" HorizontalAlignment="Center" />
-            <TextBox Grid.Column="6" x:Name="SearchTextBox"    VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="85,0,10,0" Height="25" TextChanged="SearchTextBox_TextChanged"/>
+            <Button Grid.Column="3" x:Name="SalesButton" Content="Total Sales" Click="SalesButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" />
+            <Button Grid.Column="4" x:Name="EditButton" Content="Edit" Click="EditEmployee_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" />
+            <Button Grid.Column="5" x:Name="NewButton" Content="New" Click="NewEmployee_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" />
+            <Button Grid.Column="6" x:Name="DeleteButton" Content="Delete" Click="DeleteButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40" />
+            <Button Grid.Column="7" x:Name="SearchButton" Click="SearchButton_Click" Content="Search"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="16,0,0,15" />
+            <TextBox Grid.Column="7" x:Name="SearchTextBox" VerticalAlignment="Center" Margin="56,0,0,0" Height="21" TextChanged="SearchTextBox_TextChanged"/>
 
         </Grid>
         <Grid Grid.Row="2" >
