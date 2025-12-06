@@ -66,13 +66,16 @@ namespace AT3_Project
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            string sqlQuery = "SELECT * FROM employees WHERE given_name LIKE '%" + SearchTextBox.Text + "%' OR family_name LIKE '%" + SearchTextBox.Text + "%';";
+            //LIKE works, = doesnt
+            string sqlQuery = "SELECT * FROM employees " + "WHERE given_name LIKE @Search OR family_name LIKE @Search;";
             try
             {
                 DataTable dataTable = new DataTable();
                
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                //prepared statement
+                cmd.Parameters.AddWithValue("@Search", "%" + SearchTextBox.Text + "%");
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 
                 dataTable.Load(rdr);
@@ -97,7 +100,7 @@ namespace AT3_Project
             }
             else
             {
-                sqlQuery = $"SELECT * FROM employees WHERE branch_id = {selectedBranch};";
+                sqlQuery = "SELECT * FROM employees WHERE branch_id = @BranchId;";
             }
 
             try
@@ -106,6 +109,11 @@ namespace AT3_Project
                 conn = new MySqlConnection(dbConnectionString); //Needed to initialise conn
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                //prepared statement - called when used
+                if (selectedBranch != "All Branches")
+                {
+                    cmd.Parameters.AddWithValue("@BranchId", selectedBranch);
+                }
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 dataTable.Load(rdr);
@@ -122,7 +130,7 @@ namespace AT3_Project
 
         private void SalaryButton_Checked(object sender, RoutedEventArgs e)
         {
-            string sqlQuery = "SELECT * FROM employees WHERE gross_salary > '70000' ;";
+            string sqlQuery = "SELECT * FROM employees WHERE gross_salary > @SalaryFilter;";
 
             try
             {
@@ -130,6 +138,9 @@ namespace AT3_Project
 
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+
+                cmd.Parameters.AddWithValue("@SalaryFilter", 70000);
+
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 dataTable.Load(rdr);
@@ -149,6 +160,7 @@ namespace AT3_Project
         {
             Updaterecord ob = new Updaterecord();
             ob.ShowDialog();
+            RefreshDataGrid();
             
         }
 
@@ -157,9 +169,112 @@ namespace AT3_Project
         {
             Insertwindow op1 = new Insertwindow();
             op1.ShowDialog();
+            RefreshDataGrid();
 
-        } 
+        }
 
+        private void EmployeeDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EmployeeDataGrid.SelectedItem == null)
+                return;
+
+            DataRowView row = (DataRowView)EmployeeDataGrid.SelectedItem;
+
+            int employeeId = (int)row["employee_id"];
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+       
+            if (EmployeeDataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("Must select employee from table below");
+                return;
+            }
+
+            DataRowView row = (DataRowView)EmployeeDataGrid.SelectedItem;
+            int employeeId = (int)row["employee_id"]; 
+            DeleteEmployee(employeeId);
+            RefreshDataGrid();
+
+        }
+
+        //helper function
+        private void DeleteEmployee(int id)
+        {
+            string sqlQuery = "DELETE FROM employees WHERE employee_id = @Id";
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        //helper function to update EmployeeDataGrid
+        private void RefreshDataGrid()
+        {
+            string sqlQuery = "SELECT * FROM employees;";
+        
+            try
+            {
+                DataTable dataTable = new DataTable();
+
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                dataTable.Load(rdr);
+
+                EmployeeDataGrid.ItemsSource = dataTable.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        //join operation
+        private void SalesButton_Click(object sender, RoutedEventArgs e)
+        {
+            string sqlQuery = 
+               @"
+               SELECT employees.employee_id,
+               employees.given_name,
+               employees.family_name,
+               employees.date_of_birth,
+               employees.gender_identity,
+               employees.gross_salary,
+               employees.supervisor_id,
+               employees.branch_id,
+               SUM(working_with.total_sales) AS total_sales
+               FROM employees 
+               LEFT JOIN working_with ON employees.employee_id = working_with.employee_id
+               GROUP BY employees.employee_id;"; 
+
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                using (var conn = new MySqlConnection(dbConnectionString))
+                {
+                    conn.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(sqlQuery, conn))
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        dataTable.Load(rdr);
+                    }
+                }
+
+                EmployeeDataGrid.ItemsSource = dataTable.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+        /** 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             string sqlQuery = "DELETE FROM employees WHERE employee_id = '" + SearchTextBox.Text + "';";
@@ -176,10 +291,13 @@ namespace AT3_Project
             }
             conn.Close();
         }
+        **/
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
+
+        
     }
 }
