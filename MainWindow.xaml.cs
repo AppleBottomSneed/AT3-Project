@@ -66,13 +66,15 @@ namespace AT3_Project
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            string sqlQuery = "SELECT * FROM employees WHERE given_name LIKE '%" + SearchTextBox.Text + "%' OR family_name LIKE '%" + SearchTextBox.Text + "%';";
+            string sqlQuery = "SELECT * FROM employees " + "WHERE given_name LIKE @Search OR family_name LIKE @Search;";
             try
             {
                 DataTable dataTable = new DataTable();
                
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                //prepared statement
+                cmd.Parameters.AddWithValue("@Search", "%" + SearchTextBox.Text + "%");
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 
                 dataTable.Load(rdr);
@@ -97,7 +99,7 @@ namespace AT3_Project
             }
             else
             {
-                sqlQuery = $"SELECT * FROM employees WHERE branch_id = {selectedBranch};";
+                sqlQuery = "SELECT * FROM employees WHERE branch_id = @BranchId;";
             }
 
             try
@@ -106,6 +108,11 @@ namespace AT3_Project
                 conn = new MySqlConnection(dbConnectionString); //Needed to initialise conn
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+                //prepared statement - called when used
+                if (selectedBranch != "All Branches")
+                {
+                    cmd.Parameters.AddWithValue("@BranchId", selectedBranch);
+                }
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 dataTable.Load(rdr);
@@ -122,7 +129,7 @@ namespace AT3_Project
 
         private void SalaryButton_Checked(object sender, RoutedEventArgs e)
         {
-            string sqlQuery = "SELECT * FROM employees WHERE gross_salary > '70000' ;";
+            string sqlQuery = "SELECT * FROM employees WHERE gross_salary > @SalaryFilter;";
 
             try
             {
@@ -130,6 +137,9 @@ namespace AT3_Project
 
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(sqlQuery, conn);
+
+                cmd.Parameters.AddWithValue("@SalaryFilter", 70000);
+
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 dataTable.Load(rdr);
